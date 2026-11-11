@@ -26,6 +26,7 @@
   }
 
   function home(scrollTo) {
+    if (window.renderWiring3D) renderWiring3D(null);
     const [n, t] = progress();
     const next = LESSONS.find(l => !done.has(l.id)) || LESSONS[0];
     app.innerHTML = `
@@ -90,6 +91,7 @@
       <h1><span class="num">${l.id}</span>${l.title}</h1>
       <p class="meta">약 ${l.min}분</p>
       <div class="body">${l.body}</div>
+      ${window.WIRING3D && WIRING3D[l.id] ? '<h2>3D 연결도</h2><div class="w3d" id="w3d"></div><p class="w3dcap">드래그해서 돌려 보고, 두 손가락이나 휠로 확대하세요. 30핀 ESP32 DevKit(DOIT) 기준입니다.</p>' : ''}
       ${l.wiring ? `<h2>연결</h2><div class="tbl"><table class="wire"><tbody>${l.wiring.map(w => `<tr><td>${w[0]}</td><td>→</td><td>${w[1]}</td></tr>`).join('')}</tbody></table></div>` : ''}
       ${l.code ? `<h2>코드</h2><div class="code"><button class="copy" id="copy">복사</button><pre><code>${highlight(l.code)}</code></pre></div>` : ''}
       <div class="task"><h2>실습 과제</h2><p>${l.task}</p></div>
@@ -99,6 +101,7 @@
         ${next ? `<a href="#l-${next.id}" class="nx">${next.id} ${next.title} →</a>` : '<a href="#curriculum" class="nx">커리큘럼으로 →</a>'}
       </nav>
     </article>`;
+    if (window.renderWiring3D) renderWiring3D(document.getElementById('w3d'), l.id);
     document.getElementById('mark').onclick = () => {
       if (done.has(l.id)) done.delete(l.id); else done.add(l.id);
       save();
